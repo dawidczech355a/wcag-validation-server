@@ -1,0 +1,129 @@
+{
+  "info": {
+    "title": "WCAG walidator",
+    "description": "API documentation",
+    "version": "1.0.0",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "swagger": "2.0",
+  "paths": {
+    "/auth": {
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "description": "JSON payload",
+          "schema": {
+            "$ref": "#/definitions/auth"
+          }
+        }
+      ],
+      "post": {
+        "summary": "Create account",
+        "responses": {
+          "200": {
+            "description": "Return message of action",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Użytkownik został utworzony poprawnie."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Account already exist",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Użytkownik z podanym adresem email już istnieje."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecognized server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Wystąpił błąd podczas tworzenia użytkownika. Proszę, spróbuj ponownie później."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "parameters": [
+        {
+          "name": "body",
+          "in": "body",
+          "required": true,
+          "description": "JSON payload",
+          "schema": {
+            "$ref": "#/definitions/auth"
+          }
+        }
+      ],
+      "post": {
+        "summary": "Login to account",
+        "responses": {
+          "200": {
+            "description": "Return an accessToken and refreshToken",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "accessToken": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdEBnbWFpbC5jb20iLCJpYXQiOjE2NTM0MjY1NDYsImV4cCI6MTY1MzQyNzQ0Nn0.YD-W_qiHwwfMIP0zTsxgjIJJ9eLrvPpQZpUfflTXhxw"
+                },
+                "refreshToken": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiJ9.dGVzdEBnbWFpbC5jb20.KYooK0z_jXUwlbUuIqOBig1lWWUYeZRQJeu7wTy6-Ho"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unrecognized server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie później."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "auth": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
