@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { User } from '../../entity/user';
 import { env } from '../../../environment';
+import { verifyRefreshToken } from '../../shared/isAuthenticated';
 
 export interface LoginUser {
   message?: string;
@@ -15,9 +16,9 @@ export interface LoginUser {
 const saltRounds = 10;
 const userRepository = () => getRepository(User);
 
-const generateAccessToken = (name: string): string => {
+export const generateAccessToken = (name: string): string => {
   return jwt.sign({ name }, env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '15m'
+    expiresIn: '10m'
   });
 };
 
@@ -59,7 +60,7 @@ export async function loginUser({ email, password }: User): Promise<LoginUser> {
     }
 
     const accessToken = generateAccessToken(email);
-    const refreshToken = jwt.sign(email, env.ACCESS_TOKEN_REFRESH_SECRET);
+    const refreshToken = jwt.sign({ name: email }, env.ACCESS_TOKEN_REFRESH_SECRET);
 
     return {
       accessToken,
@@ -71,4 +72,18 @@ export async function loginUser({ email, password }: User): Promise<LoginUser> {
       status: 500
     };
   }
+}
+
+export function handleRefreshToken(email: string, token: string) {
+  const isRefreshTokenValid = verifyRefreshToken(email, token);
+
+  if (!isRefreshTokenValid) {
+    return {
+      message: 'Nie udało się odświeżyć tokenu.',
+      status: 401
+    };
+  }
+
+  const accessToken = generateAccessToken(email);
+  return { accessToken };
 }

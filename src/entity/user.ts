@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Validation } from './validation';
 
 @Entity()
 export class User {
@@ -10,4 +11,7 @@ export class User {
 
   @Column('varchar', { length: 255 })
   password!: string;
+
+  @OneToMany(() => Validation, (validation) => validation.user)
+  validations?: Validation[];
 }

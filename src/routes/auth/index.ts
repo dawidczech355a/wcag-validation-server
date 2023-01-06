@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { getUserByEmail, createUser, loginUser } from './auth.service';
+import { getUserByEmail, createUser, loginUser, handleRefreshToken } from './auth.service';
 
 const router = Router();
 
@@ -55,10 +55,32 @@ router.post('/login', async (req, res) => {
       refreshToken: tokens.refreshToken
     });
   } catch (error) {
-    // TODO: już widzę, że przyda się tutaj jakiś interceptor na obsługę błędów
     res.status(500);
     res.json({ message: error });
   }
+});
+
+router.post('/refresh-token', async (req, res) => {
+  const refreshToken = req.body.refreshToken;
+  const email = req.body.email;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: 'Refresh token jest wymagany do autoryzacji.' });
+  }
+
+  if (!email) {
+    return res.status(401).json({ message: 'Użytkownik jest wymagany do autoryzacji.' });
+  }
+
+  const refreshResponse = handleRefreshToken(email, refreshToken);
+
+  if (refreshResponse.message) {
+    res.status(refreshResponse.status);
+    res.json({ message: refreshResponse.message });
+    return;
+  }
+
+  return res.json({ accessToken: refreshResponse.accessToken });
 });
 
 export default router;

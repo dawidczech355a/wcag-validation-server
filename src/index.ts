@@ -7,7 +7,7 @@ import { createConnection } from 'typeorm';
 import { env } from '../environment';
 import * as swaggerDocument from '../swagger.json';
 
-import { Auth } from './routes';
+import { Auth, User } from './routes';
 
 createConnection().then(() => {
   const app = express();
@@ -19,6 +19,7 @@ createConnection().then(() => {
   // TODO: to jest linijka która uruchamia validacje WCAG która będzie dopiero robiona
   // app.use("/validation", Validation);
   app.use('/auth', Auth);
+  app.use('/user', User);
 
   app.listen(env.PORT);
 });
